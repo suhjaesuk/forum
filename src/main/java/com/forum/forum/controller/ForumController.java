@@ -1,43 +1,46 @@
 package com.forum.forum.controller;
 
-import com.forum.forum.dto.ForumListResponse;
 import com.forum.forum.dto.ForumRequest;
 import com.forum.forum.dto.ForumResponse;
+import com.forum.forum.dto.StatusResponse;
 import com.forum.forum.service.ForumService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/forum")
 public class ForumController {
-
     private final ForumService forumService;
-
-    @PostMapping("/forum")
-    public ForumResponse createForum(@RequestBody ForumRequest forumRequest){
-        return forumService.createForum(forumRequest);
+    @PostMapping
+    public ResponseEntity<StatusResponse> createForum(@RequestBody ForumRequest forumRequest, HttpServletRequest request){
+        StatusResponse forum = forumService.createForum(forumRequest, request);
+        return new ResponseEntity<>(forum, HttpStatus.valueOf(forum.getStatusCode()));
     }
 
-    @GetMapping("/forum")
-    public List<ForumListResponse> getForum(){
+    @GetMapping
+    public List<ForumResponse> getForum(){
         return forumService.getForum();
     }
 
-    @GetMapping("/forum/{id}")
-    public ForumListResponse getForum(@PathVariable Long id){
+    @GetMapping("/{id}")
+    public ForumResponse getForum(@PathVariable Long id){
         return forumService.getForum(id);
     }
 
-    @PutMapping("/forum/{id}")
-    public ForumResponse updateForum(@PathVariable Long id, @RequestBody ForumRequest forumRequest){
-        return forumService.updateForum(id, forumRequest);
+    @PatchMapping("/{id}")
+    public ForumResponse updateForum(@PathVariable Long id, @RequestBody ForumRequest forumRequest,HttpServletRequest request){
+        return forumService.updateForum(id,forumRequest,request);
     }
-
-    @DeleteMapping("forum/{id}")
-    public ForumResponse deleteForum(@PathVariable Long id, @RequestBody ForumRequest forumRequest){
-        return forumService.deleteForum(id, forumRequest);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<StatusResponse> deleteForum(@PathVariable Long id, HttpServletRequest request){
+        StatusResponse forum = forumService.deleteForum(id,request);
+        return new ResponseEntity<>(forum, HttpStatus.valueOf(forum.getStatusCode()));
     }
 }
+
